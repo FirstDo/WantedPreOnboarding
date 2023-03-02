@@ -71,5 +71,11 @@ final class DownloadView: UIView {
             contentImageView.widthAnchor.constraint(equalToConstant: width / 3),
             contentImageView.heightAnchor.constraint(equalToConstant: 100)
         ])
+        
+        let loadAction = UIAction { _ in
+            debugPrint("download Single Image")
+        }
+        
+        loadButton.addAction(loadAction, for: .touchUpInside)
     }
 }
