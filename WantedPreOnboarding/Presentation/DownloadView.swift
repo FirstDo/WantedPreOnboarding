@@ -37,6 +37,7 @@ final class DownloadView: UIView {
     private let loadButton: UIButton = {
         var configuration = UIButton.Configuration.borderedProminent()
         configuration.title = "Load"
+        configuration.imagePadding = 10
         
         return UIButton(configuration: configuration)
     }()
@@ -44,7 +45,7 @@ final class DownloadView: UIView {
     private let id: Int
 
     init(id: Int) {
-        self.id = id + 10
+        self.id = id
         super.init(frame: .zero)
         setup()
     }
@@ -75,35 +76,30 @@ final class DownloadView: UIView {
             contentImageView.heightAnchor.constraint(equalToConstant: 100)
         ])
         
-        let loadAction = UIAction { [weak self] _ in
-            self?.downloadImage()
-        }
-        
         loadButton.configurationUpdateHandler = { [weak self] button in
             switch button.state {
             case .highlighted:
-                self?.downloadImage()
+                Task {
+                    await self?.downloadImage()
+                }
+                
             case .disabled:
                 button.configuration?.showsActivityIndicator = true
                 button.configuration?.title = "Loading"
+
             case .normal:
                 button.configuration?.showsActivityIndicator = false
                 button.configuration?.title = "Load"
+                
             default:
                 break
             }
         }
-
-        loadButton.addAction(loadAction, for: .touchUpInside)
     }
     
-    func resetImage() {
-        contentImageView.image = UIImage(systemName: "photo")
-    }
-    
-    func downloadImage() {
+    func downloadImage() async {
         loadButton.isEnabled = false
-        resetImage()
+        contentImageView.image = UIImage(systemName: "photo")
         
         Task {
             let data = try await ImageDownloader.getImage(with: id)

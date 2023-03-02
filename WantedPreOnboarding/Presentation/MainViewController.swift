@@ -19,7 +19,7 @@ final class MainViewController: UIViewController {
         return stackView
     }()
     
-    private let downloadViews = (1...5).map { DownloadView(id: $0) }
+    private let downloadViews = (10..<15).map { DownloadView(id: $0) }
     
     private let downloadAllButton: UIButton = {
         var configuration = UIButton.Configuration.borderedProminent()
@@ -49,11 +49,17 @@ final class MainViewController: UIViewController {
             contentStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
         ])
         
-        let downloadAllImageAction = UIAction { [weak self] _ in
-            debugPrint("download all Image")
-            self?.downloadViews.forEach { $0.resetImage() }
+        
+        let downloadAction = UIAction { [weak self] _ in
+            guard let self = self else { return }
+            
+            Task {
+                for downloadView in self.downloadViews {
+                    await downloadView.downloadImage()
+                }
+            }
         }
         
-        downloadAllButton.addAction(downloadAllImageAction, for: .touchUpInside)
+        downloadAllButton.addAction(downloadAction, for: .touchUpInside)
     }
 }

@@ -27,8 +27,4 @@ struct ImageDownloader {
         
         return data
     }
-    
-    static func getAllImages(with ids: [Int]) {
-        
-    }
 }
