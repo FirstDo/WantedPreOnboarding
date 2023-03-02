@@ -49,8 +49,9 @@ final class MainViewController: UIViewController {
             contentStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
         ])
         
-        let downloadAllImageAction = UIAction { _ in
+        let downloadAllImageAction = UIAction { [weak self] _ in
             debugPrint("download all Image")
+            self?.downloadViews.forEach { $0.resetImage() }
         }
         
         downloadAllButton.addAction(downloadAllImageAction, for: .touchUpInside)

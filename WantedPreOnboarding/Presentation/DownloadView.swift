@@ -72,10 +72,15 @@ final class DownloadView: UIView {
             contentImageView.heightAnchor.constraint(equalToConstant: 100)
         ])
         
-        let loadAction = UIAction { _ in
+        let loadAction = UIAction { [weak self] _ in
             debugPrint("download Single Image")
+            self?.resetImage()
         }
         
         loadButton.addAction(loadAction, for: .touchUpInside)
+    }
+    
+    func resetImage() {
+        contentImageView.image = UIImage(systemName: "photo")
     }
 }
