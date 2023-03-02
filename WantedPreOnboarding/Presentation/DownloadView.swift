@@ -40,8 +40,11 @@ final class DownloadView: UIView {
         
         return UIButton(configuration: configuration)
     }()
+    
+    private let id: Int
 
-    init() {
+    init(id: Int) {
+        self.id = id + 10
         super.init(frame: .zero)
         setup()
     }
@@ -73,14 +76,39 @@ final class DownloadView: UIView {
         ])
         
         let loadAction = UIAction { [weak self] _ in
-            debugPrint("download Single Image")
-            self?.resetImage()
+            self?.downloadImage()
         }
         
+        loadButton.configurationUpdateHandler = { [weak self] button in
+            switch button.state {
+            case .highlighted:
+                self?.downloadImage()
+            case .disabled:
+                button.configuration?.showsActivityIndicator = true
+                button.configuration?.title = "Loading"
+            case .normal:
+                button.configuration?.showsActivityIndicator = false
+                button.configuration?.title = "Load"
+            default:
+                break
+            }
+        }
+
         loadButton.addAction(loadAction, for: .touchUpInside)
     }
     
     func resetImage() {
         contentImageView.image = UIImage(systemName: "photo")
+    }
+    
+    func downloadImage() {
+        loadButton.isEnabled = false
+        resetImage()
+        
+        Task {
+            let data = try await ImageDownloader.getImage(with: id)
+            self.contentImageView.image = UIImage(data: data)
+            self.loadButton.isEnabled = true
+        }
     }
 }

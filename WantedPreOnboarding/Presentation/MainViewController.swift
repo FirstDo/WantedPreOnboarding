@@ -19,7 +19,7 @@ final class MainViewController: UIViewController {
         return stackView
     }()
     
-    private let downloadViews = (1...5).map { _ in DownloadView() }
+    private let downloadViews = (1...5).map { DownloadView(id: $0) }
     
     private let downloadAllButton: UIButton = {
         var configuration = UIButton.Configuration.borderedProminent()
